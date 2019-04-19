@@ -57,8 +57,7 @@ export const setSubstepIndex = (
 
 interface SetBucketInfo {
   type: 'SET_BUCKET_INFO'
-  payload: {
-    org: string
+  payload: { 
     orgID: string
     bucket: string
     bucketID: string
@@ -66,13 +65,12 @@ interface SetBucketInfo {
 }
 
 export const setBucketInfo = (
-  org: string,
   orgID: string,
   bucket: string,
   bucketID: string
 ): SetBucketInfo => ({
   type: 'SET_BUCKET_INFO',
-  payload: {org, orgID, bucket, bucketID},
+  payload: {orgID, bucket, bucketID},
 })
 
 interface SetBucketID {

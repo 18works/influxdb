@@ -343,8 +343,9 @@ export const createOrUpdateTelegrafConfigAsync = () => async (
         telegrafConfigName,
         telegrafConfigDescription,
       },
-      steps: {org, bucket},
+      steps: {bucket},
     },
+    orgs: {org: {name}}
   } = getState()
 
   const influxDB2Out = {
@@ -353,7 +354,7 @@ export const createOrUpdateTelegrafConfigAsync = () => async (
     config: {
       urls: [`${window.location.origin}`],
       token: '$INFLUX_TOKEN',
-      organization: org,
+      organization: name,
       bucket,
     },
   }
@@ -388,15 +389,15 @@ const createTelegraf = async (dispatch, getState, plugins) => {
     const {
       dataLoading: {
         dataLoaders: {telegrafConfigName, telegrafConfigDescription},
-        steps: {bucket, orgID, bucketID},
+        steps: {bucket, bucketID},
       },
+      orgs: {org}
     } = getState()
-
     const telegrafRequest: TelegrafRequest = {
       name: telegrafConfigName,
       description: telegrafConfigDescription,
       agent: {collectionInterval: DEFAULT_COLLECTION_INTERVAL},
-      organizationID: orgID,
+      organizationID: org.id,
       plugins,
     }
 
@@ -409,22 +410,22 @@ const createTelegraf = async (dispatch, getState, plugins) => {
         resource: {
           type: PermissionResource.TypeEnum.Buckets,
           id: bucketID,
-          orgID,
+          orgID: org.id,
         },
       },
       {
         action: Permission.ActionEnum.Read,
         resource: {
           type: PermissionResource.TypeEnum.Telegrafs,
-          id: tc.id,
-          orgID,
+          id: tc.id,         
+          orgID: org.id,
         },
       },
     ]
 
     const token = {
       name: `${telegrafConfigName} token`,
-      orgID,
+      orgID: org.id,
       description: `WRITE ${bucket} bucket / READ ${telegrafConfigName} telegraf config`,
       permissions,
     }
@@ -446,7 +447,7 @@ const createTelegraf = async (dispatch, getState, plugins) => {
     } as ILabelProperties // hack to make compiler work
 
     const createdLabel = await client.labels.create({
-      orgID,
+      orgID: org.id,
       name: '@influxdata.token',
       properties,
     })
