@@ -65,6 +65,7 @@ import TelegrafInstructionsOverlay from 'src/telegrafs/components/TelegrafInstru
 import AddMembersOverlay from 'src/members/components/AddMembersOverlay'
 import OrgProfilePage from 'src/organizations/containers/OrgProfilePage'
 import EditOrgProfileOverlay from 'src/organizations/components/EditOrgProfileOverlay'
+import AllAccessTokenOverlay from './authorizations/components/AllAccessTokenOverlay'
 
 // Actions
 import {disablePresentationMode} from 'src/shared/actions/app'
@@ -202,7 +203,14 @@ class Root extends PureComponent {
                               component={CreateScraperOverlay}
                             />
                           </Route>
-                          <Route path="tokens" component={TokensIndex} />
+                          <Route path="tokens" component={TokensIndex}>
+                            <Route path="generate">
+                              <Route
+                                path="all-access"
+                                component={AllAccessTokenOverlay}
+                              />
+                            </Route>
+                          </Route>
                           <Route path="members" component={MembersIndex}>
                             <Route path="new" component={AddMembersOverlay} />
                           </Route>

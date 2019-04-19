@@ -1,6 +1,7 @@
 // Libraries
 import React, {PureComponent, ChangeEvent} from 'react'
 import {connect} from 'react-redux'
+import {withRouter, WithRouterProps} from 'react-router'
 
 // Components
 import {Input} from '@influxdata/clockface'
@@ -12,6 +13,7 @@ import TabbedPageHeader from 'src/shared/components/tabbed_page/TabbedPageHeader
 import {Authorization} from '@influxdata/influx'
 import {IconFont} from '@influxdata/clockface'
 import {AppState} from 'src/types'
+import GenerateTokenDropdown from './GenerateTokenDropdown'
 
 enum AuthSearchKeys {
   Description = 'description',
@@ -26,7 +28,9 @@ interface StateProps {
   tokens: Authorization[]
 }
 
-class TokensTab extends PureComponent<StateProps, State> {
+type Props = StateProps & WithRouterProps
+
+class TokensTab extends PureComponent<Props, State> {
   constructor(props) {
     super(props)
     this.state = {
@@ -47,6 +51,9 @@ class TokensTab extends PureComponent<StateProps, State> {
             placeholder="Filter Tokens..."
             onChange={this.handleChangeSearchTerm}
             widthPixels={256}
+          />
+          <GenerateTokenDropdown
+            onSelectAllAccess={this.handleGenerateAllAccess}
           />
         </TabbedPageHeader>
         <FilterList<Authorization>
@@ -69,6 +76,15 @@ class TokensTab extends PureComponent<StateProps, State> {
   private get searchKeys(): AuthSearchKeys[] {
     return [AuthSearchKeys.Status, AuthSearchKeys.Description]
   }
+
+  private handleGenerateAllAccess = () => {
+    const {
+      router,
+      params: {orgID},
+    } = this.props
+
+    router.push(`/orgs/${orgID}/tokens/generate/all-access`)
+  }
 }
 
 const mstp = ({tokens}: AppState) => ({tokens: tokens.list})
@@ -76,4 +92,4 @@ const mstp = ({tokens}: AppState) => ({tokens: tokens.list})
 export default connect<StateProps, {}, {}>(
   mstp,
   null
-)(TokensTab)
+)(withRouter(TokensTab))
